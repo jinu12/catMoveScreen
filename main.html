@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Cat Screensaver</title>
+    <style>
+      body {
+        margin: 0;
+        overflow: hidden;
+      }
+      
+      #screensaver {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+      }
+      
+      .cat-gif {
+        position: absolute;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="screensaver"></div>
+    <script>
+      var numCats = 10;
+      var cats = [];
+      var catWidth = 100;
+      var catHeight = 100;
+      
+      function createCat() {
+        var x = Math.random() * (window.innerWidth - catWidth);
+        var y = Math.random() * (window.innerHeight - catHeight);
+        var xDirection = Math.random() < 0.5 ? -1 : 1;
+        var yDirection = Math.random() < 0.5 ? -1 : 1;
+        
+        // Check for collision with other cats
+        for (var i = 0; i < cats.length; i++) {
+          if (checkCollision(x, y, cats[i].x, cats[i].y)) {
+            // If new cat collides with existing cat, generate new coordinates
+            x = Math.random() * (window.innerWidth - catWidth);
+            y = Math.random() * (window.innerHeight - catHeight);
+            i = -1;
+          }
+        }
+        
+        var catGif = document.createElement('img');
+        catGif.src = 'images/cat.gif';
+        catGif.className = 'cat-gif';
+        catGif.style.left = x + 'px';
+        catGif.style.top = y + 'px';
+        document.getElementById('screensaver').appendChild(catGif);
+        
+        cats.push({
+          gif: catGif,
+          x: x,
+          y: y,
+          xDirection: xDirection,
+          yDirection: yDirection
+        });
+      }
+      
+      for (var i = 0; i < numCats; i++) {
+        createCat();
+      }
+      
+      setInterval(function() {
+        for (var i = 0; i < cats.length; i++) {
+          var cat = cats[i];
+          
+          // Move cat gif horizontally
+          cat.x += 5 * cat.xDirection;
+          if (cat.x + cat.gif.width >= window.innerWidth || cat.x <= 0) {
+            cat.xDirection *= -1;
+          }
+          cat.gif.style.left = cat.x + 'px';
+          
+          // Move cat gif vertically
+          cat.y += 5 * cat.yDirection;
+          if (cat.y + cat.gif.height >= window.innerHeight || cat.y <= 0) {
+            cat.yDirection *= -1;
+          }
+          cat.gif.style.top = cat.y + 'px';
+        }
+      }, 50);
+      
+      function checkCollision(x1, y1, x2, y2) {
+        var rect1 = {
+          left: x1,
+          top: y1,
+          right: x1 + catWidth,
+          bottom: y1 + catHeight
+        };
+        
+        var rect2 = {
+          left: x2,
+          top: y2,
+          right: x2 + catWidth,
+          bottom:
+          y2 + catHeight
+        };
+        
+        if (rect1.right >= rect2.left && rect1.left <= rect2.right &&
+            rect1.bottom >= rect2.top && rect1.top <= rect2.bottom) {
+          return true;
+        }
+        
+        return false;
+      }
+    </script>
+    
